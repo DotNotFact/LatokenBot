@@ -32,6 +32,7 @@ cd LatokenBot
       "environmentVariables": {
         "chat_gpt_api_key": "<ВАШ_CHATGPT_API_KEY>",
         "telegram_api_key": "<ВАШ_TELEGRAM_API_KEY>"
+        "mongo_conn_strings": "<ВАШ_TELEGRAM_API_KEY>"
       }
     }
   }
