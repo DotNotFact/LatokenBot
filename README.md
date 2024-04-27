@@ -34,3 +34,5 @@
 - [Kernel Memory](https://github.com/microsoft/kernel-memory)
 
 Для установки и запуска бота следуйте инструкциям в файле `INSTALL.md`.
+
+# Полтора дня жаркой ночи, было сложно :з
