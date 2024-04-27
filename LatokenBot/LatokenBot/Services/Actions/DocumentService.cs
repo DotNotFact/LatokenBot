@@ -1,14 +1,19 @@
-﻿using DocumentFormat.OpenXml.Bibliography;
-using LatokenBot.Data;
+﻿using Microsoft.KernelMemory.AI;
 using LatokenBot.Entities;
+using LatokenBot.Data;
 using MongoDB.Driver;
+using MongoDB.Bson;
 
 namespace LatokenBot.Services.Actions;
 
-internal class DocumentService(MongoDatabase userDatabase)
+internal class DocumentService(MongoDatabase userDatabase, ITextEmbeddingGenerator _embeddingGenerator)
 {
     private readonly MongoDatabase _userDatabase = userDatabase;
     private const string documentNameCollection = "documents";
+
+
+
+
 
     public IMongoCollection<DocumentEntity> GetAllDocuments()
     {

@@ -17,24 +17,22 @@ internal class UserService(MongoDatabase userDatabase)
         return users;
     }
 
-    public async Task<UserEntity> GetUserByTelegramId(long telegramId)
+    public async Task<UserEntity> AddAndGetUserByTelegramId(long telegramId, string firstName = "", string lastName = "")
     {
-        var user = await GetAllUsers().Find(u => u.TelegramId == telegramId).FirstOrDefaultAsync();
-        return user;
-    }
+        var collection = GetAllUsers(); 
+        var user = await collection.Find(u => u.TelegramId == telegramId).FirstOrDefaultAsync();
 
-    public async Task<UserEntity> AddAndGetUser(long telegramId, string firstName, string lastName)
-    {
-        var collection = GetAllUsers();
-
-        var user = new UserEntity
+        if (user is null)
         {
-            TelegramId = telegramId,
-            FirstName = firstName,
-            LastName = lastName,
-            ChatHistory = []
-        };
-        await collection.InsertOneAsync(user);
+            user = new UserEntity
+            {
+                TelegramId = telegramId,
+                FirstName = firstName,
+                LastName = lastName,
+                ChatHistory = []
+            };
+            await collection.InsertOneAsync(user);
+        }
 
         return user;
     }

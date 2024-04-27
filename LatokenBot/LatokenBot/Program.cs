@@ -3,17 +3,17 @@ using Microsoft.KernelMemory.AI.OpenAI;
 using Microsoft.Extensions.Logging;
 using LatokenBot.Services.Actions;
 using Microsoft.KernelMemory.AI;
-using Microsoft.SemanticKernel;
 using Telegram.Bot.Types.Enums;
+using Microsoft.SemanticKernel;
 using Microsoft.KernelMemory;
 using Telegram.Bot.Polling;
 using LatokenBot.Services;
-using LatokenBot.Plugins;
 using LatokenBot.Data;
 using MongoDB.Driver;
 using Telegram.Bot;
 
 // Обучение на основе 4 txt файлов в переменной prompt
+
 // Junior: Боту можно написать вопросы и получить ответы на основе материалов Хакатона.
 // Middle: Junior + Cделать группу и добавить туда бота. Бот будет отвечать на задаваемые вопросы по теме хакатона в группу, бот должен на них ответить в группе. 
 // Senior: Middle + Бот, ответив на вопрос, задает вопросы тестируя кандидата на основе Хакатон теста. 
@@ -24,11 +24,11 @@ var services = builder.Services;
 var plugins = builder.Plugins;
 
 // Константы
+string connectionString = Environment.GetEnvironmentVariable("atlas_con_string") ?? throw new ArgumentNullException(nameof(connectionString));
 string telegramKey = Environment.GetEnvironmentVariable("telegram_api_key") ?? throw new ArgumentNullException(nameof(telegramKey));
 string apiKey = Environment.GetEnvironmentVariable("chat_gpt_api_key") ?? throw new ArgumentNullException(nameof(apiKey));
-const string connectionString = "mongodb://localhost:27017";
 const string embeddingModel = "text-embedding-ada-002";
-const string modelId = "gpt-4-1106-preview";
+const string modelId = "gpt-4-turbo-2024-04-09";
 
 // Валидация конфигурации
 var openAIConfig = new OpenAIConfig
@@ -40,8 +40,8 @@ var openAIConfig = new OpenAIConfig
 openAIConfig.Validate();
 
 // Плагины
-plugins
-    .AddFromType<MongoDBPlugin>();
+//plugins
+//.AddFromType<MongoDBPlugin>();
 
 // Сервисы
 services
@@ -49,21 +49,19 @@ services
     .AddSingleton<ITelegramBotClient>(_ => new TelegramBotClient(telegramKey))
     .AddSingleton<CancellationTokenService>()
     .AddSingleton<TelegramBotService>()
-    .AddScoped<DataRetrievalService>()
+    // .AddScoped<RagAgentService>()
     .AddScoped<DocumentService>()
     .AddScoped<MongoDatabase>()
     .AddScoped<UserService>()
     // Регистрация OpenAITextEmbeddingGenerator с использованием конфигурации
     .AddScoped<ITextEmbeddingGenerator>(sp =>
     {
-        var httpClientFactory = sp.GetService<IHttpClientFactory>();
-        var httpClient = httpClientFactory.CreateClient();
-
+        var httpClient = sp.GetService<HttpClient>() ?? new HttpClient();
         return new OpenAITextEmbeddingGenerator(openAIConfig, null, sp.GetService<ILogger<OpenAITextEmbeddingGenerator>>(), httpClient);
     });
 
 // Добавляем IHttpClientFactory в DI контейнер
-services.AddHttpClient();
+// services.AddHttpClient();
 
 // Конфигурация сообщений
 services.Configure<ReceiverOptions>(s =>
