@@ -26,7 +26,10 @@
 
 ## Библиотеки
 
+- [Dependency Injection](https://github.com/dotnet/docs/blob/main/docs/core/extensions/dependency-injection.md)
+- [MongoDB Driver](https://github.com/mongodb/mongo-csharp-driver)
 - [Semantic Kernel](https://github.com/microsoft/semantic-kernel)
 - [Telegram Bot](https://github.com/telegrambots/Telegram.Bot)
+- [Kernel Memory](https://github.com/microsoft/kernel-memory)
 
 Для установки и запуска бота следуйте инструкциям в файле `INSTALL.md`.
