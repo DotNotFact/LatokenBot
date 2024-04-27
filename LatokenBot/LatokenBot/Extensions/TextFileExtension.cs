@@ -1,29 +1,43 @@
-﻿using System.Text;
+﻿using System.Collections.Concurrent;
+using System.Text;
 
 namespace LatokenBot.Extensions;
 
 internal class TextFileExtension
 {
-    public static string GetTraining()
+    public static string[] GetTrainingDocuments(string[] trainingFilePaths)
     {
-        var combinedContent = new StringBuilder();
+        //string[] trainingFilePaths =
+        //    [
+        //        @"C:\Users\DotNotFact\Desktop\Git Project\LatokenBot\LatokenBot\LatokenBot\Training\rules.txt",
+        //        @"C:\Users\DotNotFact\Desktop\Git Project\LatokenBot\LatokenBot\LatokenBot\Training\about.txt",
+        //        @"C:\Users\DotNotFact\Desktop\Git Project\LatokenBot\LatokenBot\LatokenBot\Training\hackaton.txt",
+        //        @"C:\Users\DotNotFact\Desktop\Git Project\LatokenBot\LatokenBot\LatokenBot\Training\test.txt",
+        //        @"C:\Users\DotNotFact\Desktop\Git Project\LatokenBot\LatokenBot\LatokenBot\Training\hard.txt",
+        //    ];
 
-        string[] trainingfilePaths = [
-            @"C:\Users\DotNotFact\Desktop\LatokenBot\LatokenBot\Training\about.txt",
-            @"C:\Users\DotNotFact\Desktop\LatokenBot\LatokenBot\Training\hackaton.txt",
-            @"C:\Users\DotNotFact\Desktop\LatokenBot\LatokenBot\Training\test.txt",
-            @"C:\Users\DotNotFact\Desktop\LatokenBot\LatokenBot\Training\hard.txt",
-        ];
+        var documents = new ConcurrentBag<string>();
 
-        foreach (string filePath in trainingfilePaths)
+        Parallel.ForEach(trainingFilePaths, filePath =>
         {
-            if (!File.Exists(filePath))
-                Console.WriteLine($"Файл не найден: {filePath}");
+            try
+            {
+                if (File.Exists(filePath))
+                {
+                    using var reader = new StreamReader(filePath, Encoding.UTF8);
+                    documents.Add(reader.ReadToEnd());
+                }
+                else
+                {
+                    Console.WriteLine($"Файл не найден: {filePath}");
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Ошибка при чтении файла {filePath}: {e.Message}");
+            }
+        });
 
-            using var reader = new StreamReader(filePath, Encoding.UTF8);
-            combinedContent.AppendLine(reader.ReadToEnd());
-        }
-
-        return combinedContent.ToString();
+        return [.. documents];
     }
 }
